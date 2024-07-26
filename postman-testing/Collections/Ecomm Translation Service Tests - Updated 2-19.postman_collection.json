@@ -1,0 +1,459 @@
+{
+	"info": {
+		"_postman_id": "07aad3dd-dc2f-4268-a606-b602731deafa",
+		"name": "Ecomm Translation Service Tests - Updated 2/19",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18774730"
+	},
+	"item": [
+		{
+			"name": "Local TS Mocked Controller Tests",
+			"item": [
+				{
+					"name": "Mocked OC Controller Tests",
+					"item": [
+						{
+							"name": "TestMockedConversationController",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8443/api/v1/ecomm-translation-service/oc/mock/v2/conversation",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"v1",
+										"ecomm-translation-service",
+										"oc",
+										"mock",
+										"v2",
+										"conversation"
+									],
+									"query": [
+										{
+											"key": "messageSendCount",
+											"value": "2",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TestMockedConversationWithAttachmentController",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8443/api/v1/ecomm-translation-service/oc/mock/v2/conversation/attachment",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"v1",
+										"ecomm-translation-service",
+										"oc",
+										"mock",
+										"v2",
+										"conversation",
+										"attachment"
+									],
+									"query": [
+										{
+											"key": "messageSendCount",
+											"value": "2",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TestMockedAttachmentController",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8443/api/v1/ecomm-translation-service/oc/mock/v2/files",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"v1",
+										"ecomm-translation-service",
+										"oc",
+										"mock",
+										"v2",
+										"files"
+									],
+									"query": [
+										{
+											"key": "messageSendCount",
+											"value": "2",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "TestE2EMockedMessageController",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Records\": [\n    {\n      \"messageId\": \"somemesasgeid\",\n      \"receiptHandle\": \"MessageReceiptHandle\",\n      \"body\": {\n          \"Message\":{\n            \"EcommContentId\": \"testId\"\n        }\n      },\n      \"attributes\": {\n        \"ApproximateReceiveCount\": \"1\",\n        \"SentTimestamp\": \"sometimestamp\",\n        \"SenderId\": \"someid\",\n        \"ApproximateFirstReceiveTimestamp\": \"sometimestamp\"\n      },\n      \"messageAttributes\": {},\n      \"md5OfBody\": \"somebody\",\n      \"eventSource\": \"aws:sqs\",\n      \"eventSourceARN\": \"someARN\",\n      \"awsRegion\": \"eu-west-1\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8443/api/v1/ecomm-translation-service/e2e/mock/sqs/oc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"v1",
+								"ecomm-translation-service",
+								"e2e",
+								"mock",
+								"sqs",
+								"oc"
+							],
+							"query": [
+								{
+									"key": "messageSendCount",
+									"value": "2",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "POSTMAN ONLY: OC API V2 Tests",
+			"item": [
+				{
+					"name": "Conversation W/OAuth",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "refreshTokenUrl",
+									"value": "https://iam-oauth2.globalrelay.com/oauth2/token",
+									"type": "string"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "string"
+								},
+								{
+									"key": "clientSecret",
+									"value": "xjQoDa67pAEjp9Y7TcJe0-JYo2",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "9bd60927-664f-42db-888f-9c5da898975c",
+									"type": "string"
+								},
+								{
+									"key": "scope",
+									"value": "openid write conversation file",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "https://iam-oauth2.globalrelay.com/oauth2/token",
+									"type": "string"
+								},
+								{
+									"key": "client_authentication",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "useBrowser",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestInfo\": {\n        \"requestId\": \"9560effe-da8e-4788-9328-7a7964ead023\"\n    },\n    \"conversationOverview\": {\n        \"conversationId\": \"9845889e-921d-4853-ab73-34584f497003\",\n        \"conversationType\": \"InMeetingChat-DM\",\n        \"initiatorName\": \"Jacob Ryan\",\n        \"initiatorEmail\": \"jacobryan@nmcop.com\",\n        \"title\": \"Is this the subject?\",\n        \"description\": \"What does the description look like?\",\n        \"initialParticipants\": [\n            {\n                \"displayName\": \"Jacob Ryan\",\n                \"corporateEmail\": \"jacobryan@nmcop.com\",\n                \"userType\": \"initiator\"\n            }\n        ]\n    },\n    \"conversationEvents\": [\n        {\n            \"eventTime\": 1708106713247,\n            \"eventType\": \"Message\",\n            \"participants\": [\n                {\n                    \"displayName\": \"Jacob Ryan\",\n                    \"corporateEmail\": \"jacobryan@nmcop.com\",\n                    \"userType\": \"initiator\"\n                }\n            ],\n            \"content\": {\n                \"message\": \"This is a plain message\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://conversations.api.globalrelay.com/v2/conversations",
+							"protocol": "https",
+							"host": [
+								"conversations",
+								"api",
+								"globalrelay",
+								"com"
+							],
+							"path": [
+								"v2",
+								"conversations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Conversation - Attach File W/OAuth",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "refreshTokenUrl",
+									"value": "https://iam-oauth2.globalrelay.com/oauth2/token",
+									"type": "string"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "string"
+								},
+								{
+									"key": "clientSecret",
+									"value": "xjQoDa67pAEjp9Y7TcJe0-JYo2",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "9bd60927-664f-42db-888f-9c5da898975c",
+									"type": "string"
+								},
+								{
+									"key": "scope",
+									"value": "openid write conversation file",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "https://iam-oauth2.globalrelay.com/oauth2/token",
+									"type": "string"
+								},
+								{
+									"key": "client_authentication",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "useBrowser",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestInfo\": {\n        \"requestId\": \"9560effe-da8e-4788-9328-7a7964ead023\"\n    },\n    \"conversationOverview\": {\n        \"conversationId\": \"9845889e-921d-4853-ab73-34584f497003\",\n        \"conversationType\": \"InMeetingChat-DM\",\n        \"initiatorName\": \"Jacob Ryan\",\n        \"initiatorEmail\": \"jacobryan@nmcop.com\",\n        \"title\": \"Is this the subject?\",\n        \"description\": \"What does the description look like?\",\n        \"initialParticipants\": [\n            {\n                \"displayName\": \"Jacob Ryan\",\n                \"corporateEmail\": \"jacobryan@nmcop.com\",\n                \"userType\": \"initiator\"\n            }\n        ]\n    },\n    \"conversationEvents\": [\n        {\n            \"eventTime\": 1708106713247,\n            \"eventType\": \"Message\",\n            \"participants\": [\n                {\n                    \"displayName\": \"Jacob Ryan\",\n                    \"corporateEmail\": \"jacobryan@nmcop.com\",\n                    \"userType\": \"initiator\"\n                }\n            ],\n            \"content\": {\n                \"message\": \"This is a plain message\"\n            }\n        },\n        {\n            \"eventTime\": 1708106713247,\n            \"eventType\": \"File_transfer\",\n            \"participants\": [\n                {\n                    \"displayName\": \"Jacob Ryan\",\n                    \"corporateEmail\": \"jacobryan@nmcop.com\",\n                    \"userType\": \"initiator\"\n                }\n            ],\n            \"files\": [\n                {\n                    \"filename\": \"ecomm-test-data.txt\",\n                    \"fileKey\": \"default/ecomm-test-data.txt\",\n                    \"fileHref\": \"https://docs.spring.io/spring-security/site/docs/5.2.12.RELEASE/reference/html/images/tip.png\",\n                    \"isInlined\": true\n                }\n            ]\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://conversations.api.globalrelay.com/v2/conversations",
+							"protocol": "https",
+							"host": [
+								"conversations",
+								"api",
+								"globalrelay",
+								"com"
+							],
+							"path": [
+								"v2",
+								"conversations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "File Upload W/OAuth",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "refreshTokenUrl",
+									"value": "https://iam-oauth2.globalrelay.com/oauth2/token",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "https://iam-oauth2.globalrelay.com/oauth2/token",
+									"type": "string"
+								},
+								{
+									"key": "clientSecret",
+									"value": "xjQoDa67pAEjp9Y7TcJe0-JYo2",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "9bd60927-664f-42db-888f-9c5da898975c",
+									"type": "string"
+								},
+								{
+									"key": "scope",
+									"value": "openid write conversation file",
+									"type": "string"
+								},
+								{
+									"key": "client_authentication",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "useBrowser",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": "/Users/jjj8385/Downloads/ecomm-test-data.txt"
+							}
+						},
+						"url": {
+							"raw": "https://conversations.api.globalrelay.com/v2/files/default/ecomm-test-data.txt",
+							"protocol": "https",
+							"host": [
+								"conversations",
+								"api",
+								"globalrelay",
+								"com"
+							],
+							"path": [
+								"v2",
+								"files",
+								"default",
+								"ecomm-test-data.txt"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Sercive Health Check",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8443/api/v1/ecomm-translation-service/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"v1",
+								"ecomm-translation-service",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,54 @@
+---
+apiVersion: kanali.io/v1
+kind: ApiProxy
+metadata:
+  name: ecomm-translation-service
+  namespace: lpa-ecomm
+spec:
+  path: /v1/ecomm-translation-service
+  target: /api/v1/ecomm-translation-service
+  service:
+    port: 8443
+    labels:
+    - name: contextRoot
+      value: ecomm-translation-service
+    - name: deployment
+      header: x-nm-deployment
+    - name: version
+      value: v1
+  plugins:
+  - name: apiKey
+  ssl:
+    secretName: "lpa-ecomm-lastmile" 
+
+---
+
+apiVersion: kanali.io/v1
+kind: ApiKeyBinding
+metadata:
+  name: ecomm-translation-service
+  namespace: lpa-ecomm
+spec:
+  proxy: ecomm-translation-service
+  keys:
+  - name: nmlvhub-postdeployverify
+    defaultRule:
+      global: true
+  - name: nm-monitoring
+    subpaths:  # only allow the health route
+      - path: /health
+        rule:
+          granular:
+            verbs:
+              - GET
+    defaultRule:
+      global: false
+  - name: nm-apiregistry
+    defaultRule:
+      global: false
+    subpaths:
+      - path: /doc
+        rule:
+          granular:
+            verbs:
+              - GET

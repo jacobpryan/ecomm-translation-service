@@ -1,0 +1,144 @@
+---
+variables:
+  CONTEXT_PATH: "/api/v1/ecomm-translation-service"
+  FORCE_DELETE_APIPROXY: "true"
+  KUBE_NAMESPACE: "lpa-ecomm"
+  KUBE_DELETE_DRY_RUN: "false"
+  INT_MULTI_CLUSTER_DEPLOY: "both"
+  INT_DEPLOY_GLOBAL_SVC_ONLY: "true"
+  INT_DEPLOY_GLOBAL_SVC_ONLY_TARGET: "false"
+  QA_MULTI_CLUSTER_DEPLOY: "both"
+  QA_DEPLOY_GLOBAL_SVC_ONLY: "true"
+  QA_DEPLOY_GLOBAL_SVC_ONLY_TARGET: "false"
+  PROD_MULTI_CLUSTER_DEPLOY: "both"
+  PROD_DEPLOY_GLOBAL_SVC_ONLY: "true"
+  PROD_DEPLOY_GLOBAL_SVC_ONLY_TARGET: "false"
+  # Assign Cherwell ticket to the user who runs the Create CM stage.
+  CHG_OWNED_BY: ${GITLAB_USER_LOGIN}
+  
+  CHANGE_TYPE: "Standard"
+  CHG_REQUESTED_BY: ${GITLAB_USER_LOGIN}
+  CHG_ASSIGNED_TO: ${GITLAB_USER_LOGIN}
+  CHG_ASSIGNMENT_GROUP: "ITSM.LPA-Compliance-eComm.T3"
+  CHG_CHANGE_TYPE: "normal"
+  CHG_CONFIGURATION_ITEM: "Compliance Electronic Communication API - Data Collection"
+  CHG_PROMOTION_METHOD: "gitlab-ci"
+  CHG_PROMOTION_ID: "${CI_COMMIT_SHA}"
+  CHG_REASON: "Change in business requirements"
+  CHG_RISK_IMPACT_ANALYSIS: "3-low"
+  CHG_CHANGE_DURATION: "12"
+  CHG_SHORT_DESCRIPTION: "Request to deploy the ecomm-translation-service to production"
+  CHG_DESCRIPTION: "
+WHAT?
+Request to deploy ecomm-translation-service application jar to production server from GitLab CICD pipeline.
+WHY?
+We have made code changes and tested in test environment successfully and now ready to deploy in prod.
+HOW?
+Through GitLab CICD we will build the code and deploy the jar created to prod server.
+WHEN?
+Deployment will be done during the change window."
+
+     
+  # Standard Change Fields
+  #CHG_STANDARD_TEMPLATE: 'CICD : Ecomm Archival and Supervision'
+  #CHG_JOBS_AUTO: "false"
+
+stages:
+  - Test
+  - Pre-Build
+  - Quality
+  - Build
+  - Post-Build
+  - Deploy Int
+  - Dynatrace Helper Int
+  - Deploy QA
+  - Dynatrace Helper QA
+  - CM Create
+  - CM Check
+  - Deploy Production
+  - Dynatrace Helper Production
+  - CM Close - Review
+
+include:
+  - project: 'gitlab/gitlabci-template'
+    ref: v1.34.2 
+    file: '/unit-test/.unit-test-gradle-common.yml'
+  - project: 'gitlab/gitlabci-template'
+    ref: v1.34.2 
+    file: '/pre-build/.pre-build-common-template.yml'
+  - project: 'gitlab/gitlabci-template'
+    ref: v1.34.2 
+    file: '/build/.build-docker-common-template.yml'
+  - project: 'gitlab/gitlabci-template'
+    ref: v1.34.2 
+    file: '/post-build/.post-build-common-template.yml'
+  - project: 'gitlab/gitlabci-template'
+    ref: v1.34.2 
+    file: '/post-build/.cherwell-template.yml'
+  - project: 'gitlab/gitlabci-template'
+    ref: v1.34.2 
+    file: '/deploy/appplat/.deploy-kube-internal-nm01mig-v0.0.1.yml'
+  - project: gitlab/gitlabci-template-v2
+    ref: 9.6.0  
+    file: /standalone-jobs/quality/code-quality.yml
+
+Unit Tests:
+  stage: Test
+  image: $NM_PROD_REGISTRY/base-images/java11:latest-jdk-alpine3.12
+SonarQube:
+  stage: Quality  
+  allow_failure: true
+Checkmarx Full Scan Manual:
+  when: always
+  allow_failure: false
+Checkmarx:
+  allow_failure: false
+DockerfileLint:
+  allow_failure: false
+Twistlock:
+  allow_failure: false
+
+Int:
+  when: always
+  only:
+    - feature/integration-testing
+    - deploy
+    - qa
+    - main
+    - tags
+          
+Int - Force Deploy to Stable:
+  when: manual
+  only:
+    - deploy
+    - qa
+    - main
+    - tags
+
+QA:
+  when: always
+  only:
+    - qa
+    - main
+    - tags
+
+Assemble:
+  stage: Pre-Build
+  image: $NM_PROD_REGISTRY/base-images/java11:latest-jdk-alpine3.12
+  script:
+    - ./gradlew assemble
+  variables:
+    GRADLE_OPTS: '-Dorg.gradle.daemon=false'
+  needs:
+    - Unit Tests
+  cache:
+    policy: pull
+    key: "${CI_PROJECT_NAME}_${CI_COMMIT_REF_SLUG}"
+    paths:
+      - .gradle/caches/
+      - .gradle/home/wrapper/dists/
+  artifacts:
+    paths:
+      - build/libs
+    when: always
+    expire_in: 1 week

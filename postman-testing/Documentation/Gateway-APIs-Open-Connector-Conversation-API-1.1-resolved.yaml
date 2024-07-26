@@ -1,0 +1,410 @@
+---
+openapi: 3.0.1
+info:
+  title: Open Connector Conversation API
+  description: API for uploading instant messaging style of conversations
+  contact:
+    email: all_enterprise_api@globalrelay.net
+  version: "1.1"
+servers:
+- url: https://urldefense.com/v3/__https://swaggerhub.globalrelay.net/virts/Gateway-APIs/Open-Connector-Conversation-API/1.1__;!!IqRYp603ny2KL2MbNA!0DC9xz9vG69QwQUA7LKSA8mcB0fhLFTu3cOqtOcCP0Q6GdqtuzP0qlZJ5M3Arggkp-F-9CrylNTHMEUt67d0p74e9wQUPF-otDZFCKVtrg$ 
+  description: SwaggerHub API Auto Mocking
+security:
+- oAuth2ClientCredentials: []
+tags:
+- name: Conversation
+  description: Create conversations
+paths:
+  /v2/conversations:
+    post:
+      tags:
+      - Conversation
+      summary: Create a Single Conversation.
+      description: Represents conversation between several parties, eg.g IM messaging or threaded conversation over time
+      operationId: createConversation
+      requestBody:
+        description: Generate a conversation style message
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conversation'
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateConversationResponse'
+              example:
+                reconciliationId: d6bfd7dc-d2bf-48a4-ba98-780c76fe69a7
+        "400":
+          description: Bad Request. Request is not well-formed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                timestamp: 2020-07-09T17:04:46.693654Z
+                status: 400
+                error: Client Error
+                message: Bad Request. Request is not well-formed
+                path: /v2/conversations
+        "405":
+          description: Method is not supported
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                timestamp: 2020-07-09T17:04:46.693654Z
+                status: 405
+                error: Method Not Allowed
+                message: Method is not supported
+                path: /v2/conversations
+        "413":
+          description: Request size exceeds the allowable limit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                timestamp: 2020-07-09T17:04:46.693654Z
+                status: 413
+                error: Payload Too Large
+                message: Request size exceeds the allowable limit
+                path: /v2/conversations
+        "429":
+          description: Rate Limit for this endpoint has been exceeded. Check headers for more information.
+          headers:
+            ratelimit-limit:
+              description: The total number of requests permitted per time period.
+              schema:
+                type: integer
+            ratelimit-remaining:
+              description: The number of requests left on your account for the time window.
+              schema:
+                type: integer
+            ratelimit-reset:
+              description: The number of seconds until the rate limit resets.
+              schema:
+                type: integer
+                format: seconds
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Limits exceeded
+        "500":
+          description: Oops! Something went wrong. Please try again later
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                timestamp: 2020-07-09T17:04:46.693654Z
+                status: 500
+                error: Internal Server Error
+                message: Oops! Something went wrong. Please try again later
+                path: /v2/conversations
+components:
+  schemas:
+    ErrorResponse:
+      required:
+      - error
+      - message
+      - path
+      - status
+      - timestamp
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: 2020-07-09T17:04:46.693654Z
+        status:
+          type: integer
+          format: int32
+          example: 400
+        error:
+          type: string
+          example: Client Error
+        message:
+          type: string
+          example: Bad Request. Request is not well-formed
+        path:
+          type: string
+          example: /v2/conversations
+    Conversation:
+      required:
+      - conversationOverview
+      - requestInfo
+      type: object
+      properties:
+        requestInfo:
+          $ref: '#/components/schemas/RequestInfo'
+        conversationOverview:
+          $ref: '#/components/schemas/ConversationOverview'
+        conversationEvents:
+          type: array
+          example:
+          - eventTime: 1621855000000
+            eventId: 55000
+            eventType: User_joined
+            participants:
+            - displayName: Goku
+              corporateEmail: goku@example-globalrelay.net
+              isParticipant: false
+          - eventTime: 1621866000000
+            eventId: 55001
+            eventType: File_transfer
+            participants:
+            - displayName: Goku
+              corporateEmail: goku@example-globalrelay.net
+              userType: initiator
+              isParticipant: false
+            files:
+            - filename: meeting-video.mp4
+              fileKey: example-corp/all-meetings/meeting-video.mp4
+              isInlined: false
+              isAvailable: true
+          items:
+            $ref: '#/components/schemas/ConversationEvent'
+      description: One conversation object that will be converted into one conversation style EML
+    RequestInfo:
+      required:
+      - requestId
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: Client generated uuid for tracking purposes (A UUID specified by RFC4122).
+          format: uuid
+          example: 2c8d4927-433c-4e9a-bf02-ead2f17d1ef2
+      description: Top level information that must be included in every request payload.
+    ConversationOverview:
+      required:
+      - conversationId
+      - conversationType
+      - initiatorEmail
+      - initiatorName
+      type: object
+      properties:
+        conversationId:
+          type: string
+          description: An unique ID for the conversation. Unique to the authorized application.
+          example: 1fbbfbe2-aaaa-bbbb-cccc-2c7bf053fb23
+        initiatorName:
+          type: string
+          description: Name of the conversation initiator, EML Header 'From'.
+          example: Goku
+        initiatorEmail:
+          type: string
+          description: E-mail of the conversation initiator, associated 'From' email address.
+          example: goku@example-globalrelay.net
+        conversationType:
+          type: string
+          description: Types of conversation (channel, direct_message,SMS, chat etc)
+          example: PublicChat
+        title:
+          type: string
+          description: Title of the conversation.
+          example: Meeting using Personal Meeting ID
+        description:
+          type: string
+          description: Description of the conversation.
+          example: Goku's Personal Meeting
+        isExternal:
+          type: boolean
+          description: Flag for internal/external status. External - including participants from other companies. Internal - no external participants. Internal users only.
+          example: false
+        isPrivate:
+          type: boolean
+          description: Flag for private/public status. Public - anyone can join the channel/chat Private - by invites only
+          example: false
+        initialParticipants:
+          type: array
+          description: IDs of all participants involved in the conversation during the downloading period. Including users has left the conversation.
+          items:
+            $ref: '#/components/schemas/EventUser'
+        conversationProperties:
+          type: array
+          description: List of properties that can be used for any proposal.
+          items:
+            $ref: '#/components/schemas/ConversationProperty'
+      description: Meta information to the conversation thread. Can be used for EML header section.
+    ConversationEvent:
+      required:
+      - eventTime
+      - eventType
+      - participants
+      type: object
+      properties:
+        eventTime:
+          pattern: ^\d{1,19}$
+          type: integer
+          description: Time of the event in epoch milliseconds.
+          format: int64
+          example: 1621851918000
+        eventType:
+          type: string
+          example: File_transfer
+          enum:
+          - File_transfer
+          - Invitation
+          - Invitation_declined
+          - Message
+          - Admin_event
+          - User_joined
+          - User_left
+          - Message_edited
+          - Message_deleted
+          - File_transfer_comment
+          - User_removed
+          - User_event
+          - Reaction
+          - Meeting_event
+          - Screenshot
+        childEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConversationEvent'
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventUser'
+        content:
+          $ref: '#/components/schemas/EventContent'
+        systemText:
+          type: string
+          description: Text shown at the end of event date line.
+          example: attaching meeting recording
+        files:
+          type: array
+          example:
+            filename: meeting-video.mp4
+            fileKey: /default/example-corp/all-meetings/meeting-video.mp4
+            isInlined: false
+            isAvailable: true
+          items:
+            $ref: '#/components/schemas/FileInfo'
+      description: An array of events within a conversation. Items ranging from messages to join/leave events and other actions.
+    EventUser:
+      required:
+      - corporateEmail
+      - displayName
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: User name.
+          example: Goku
+        corporateEmail:
+          type: string
+          description: User's corporate email.
+          example: goku@example-globalrelay.net
+        phone:
+          type: string
+          description: User's phone number .
+          example: "44123456789"
+        companyName:
+          type: string
+          description: User's company name.
+          example: Example Corp
+        userType:
+          type: string
+          description: Type of user. If not present then user is assumed to be recipient.
+          example: initiator
+          enum:
+          - initiator
+          - initiatedOBO
+          - affectedUser
+          - recipient
+    ConversationProperty:
+      required:
+      - name
+      - value
+      type: object
+      properties:
+        name:
+          type: string
+          description: Property name. Flexible field allowing metadata to be added for desired use case purpose
+          example: ConversationType
+        value:
+          type: string
+          description: Property value
+          example: Multichannel
+        xheader:
+          type: boolean
+          description: Defines if a xheader is to be created for this conversation property.Header name will be prefixed with X-GR-OC-
+          example: false
+    EventContent:
+      required:
+      - message
+      type: object
+      properties:
+        message:
+          type: string
+          description: Plain text data supported for event content
+          example: Good morning
+    FileInfo:
+      required:
+      - fileKey
+      - filename
+      type: object
+      properties:
+        filename:
+          type: string
+          example: meeting-video.mp4
+        fileKey:
+          type: string
+          description: Id/key of the file used to create attachment.Should be the same fileKey as specified when sending to Files endpoint
+          example: example-corp/all-meetings/meeting-video.mp4
+        fileHref:
+          type: string
+          description: HREF link to denote the external link to the file on the host provider platform
+          example: https://urldefense.com/v3/__https://www.globalrelay.com/?__;!!IqRYp603ny2KL2MbNA!0DC9xz9vG69QwQUA7LKSA8mcB0fhLFTu3cOqtOcCP0Q6GdqtuzP0qlZJ5M3Arggkp-F-9CrylNTHMEUt67d0p74e9wQUPF-otDZ3_X6PaQ$ 
+        isInlined:
+          type: boolean
+          description: Defines if attachemnt should be inlined in the EML body or not.Default:false
+          example: false
+    CreateConversationResponse:
+      required:
+      - reconciliationId
+      type: object
+      properties:
+        reconciliationId:
+          type: string
+          description: Unique ID assigned by API service for each request
+          example: 6a27013e-6ee4-64a6-9a69-9b6c6d75f553
+      description: API response for the create operation request.
+  responses:
+    Error-429-Rate-Limit-Exceeded-3Scale:
+      description: Rate Limit for this endpoint has been exceeded. Check headers for more information.
+      headers:
+        ratelimit-limit:
+          description: The total number of requests permitted per time period.
+          schema:
+            type: integer
+        ratelimit-remaining:
+          description: The number of requests left on your account for the time window.
+          schema:
+            type: integer
+        ratelimit-reset:
+          description: The number of seconds until the rate limit resets.
+          schema:
+            type: integer
+            format: seconds
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: Limits exceeded
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      description: This API uses OAuth 2 with the client credentials flow.
+      flows:
+        clientCredentials:
+          tokenUrl: /v1/oauth/token
+          scopes: {}

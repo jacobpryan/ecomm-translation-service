@@ -1,0 +1,94 @@
+dependencies {
+    compileOnly(
+            [group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: springBootVersion],
+            [group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'],
+            [group: 'org.springframework.boot', name: 'spring-boot-devtools', version: springBootVersion]
+    )
+    implementation(
+            // Spring
+            [group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: springBootVersion],
+            [group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: springBootVersion],
+            [group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springBootVersion],
+            [group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: springBootVersion],
+            [group: 'org.springframework', name: 'spring-context-support', version: springFrameVersion],
+            [group: 'org.springframework', name: 'spring-beans', version: springFrameVersion], // beans
+            [group: 'org.springframework', name: 'spring-core', version: springFrameVersion],
+            [group: 'org.springframework', name: 'spring-webmvc', version: '5.3.18'],
+
+            // Oauth
+            [group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: '5.7.10'],
+
+            // JPA
+            [group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: springBootVersion],
+
+            // Apache
+            [group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: tomcatVersion],
+            [group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: tomcatVersion],
+            [group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'],
+            [group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'],
+            [group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'],
+            [group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'],
+            [group: 'org.apache.poi', name: 'poi', version: apachePoiVersion],
+            [group: 'org.apache.poi', name: 'poi-ooxml', version: apachePoiVersion],
+            [group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'],
+
+            // Jackson
+            [group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: jacksonVersion],
+            [group: 'com.fasterxml.jackson.module', name: 'jackson-module-jaxb-annotations', version: jacksonVersion],
+
+            // Logs
+            [group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '6.3'],
+            [group: 'org.slf4j', name: 'log4j-over-slf4j', version: '1.7.32'],
+
+            // AWS
+            [group: 'software.amazon.awssdk', name: 'sqs', version: awsSdkVersion],
+            [group: 'software.amazon.awssdk', name: 's3', version: awsSdkVersion],
+            [group: 'software.amazon.awssdk', name: 'sts', version: awsSdkVersion],
+            [group: 'io.awspring.cloud', name: 'spring-cloud-starter-aws-messaging', version: '2.3.5'],
+
+            // Misc
+            [group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'],
+            [group: 'org.json', name: 'json', version: '20210307'],
+            [group: 'com.opencsv', name: 'opencsv', version: '5.5.2'],
+            [group: 'commons-io', name: 'commons-io', version: '2.8.0'],
+            [group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'],
+            [group: 'org.yaml', name: 'snakeyaml', version: '2.0'],
+            [group: 'com.google.guava', name: 'guava', version: '31.1-jre'],
+            [group: 'com.google.code.gson', name: 'gson', version: '2.8.9'],
+            [group: 'org.hibernate', name: 'hibernate-validator', version: '6.2.4.Final'],
+            [group: 'io.netty', name: 'netty-codec', version: nettyVersion],
+            [group: 'io.netty', name: 'netty-codec-http2', version: nettyVersion],
+
+            // Jar Libs
+            fileTree(dir: 'lib', include: ['*.jar'])
+    )
+    testImplementation(
+            [group: 'junit', name: 'junit', version: '4.13.1'],
+            [group: 'org.mockito', name: 'mockito-core', version: '3.12.4'],
+            [group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion]
+    )
+    runtimeOnly(
+            [group: 'org.postgresql', name: 'postgresql', version: '']
+    )
+    annotationProcessor('org.projectlombok:lombok:1.18.24')
+    configurations.all {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'org.springframework' && details.requested.name == 'spring-web') {
+                details.useVersion '5.3.18'
+                details.because 'fixes CVE-2022-22965'
+            }
+            if (details.requested.group == 'org.springframework' && details.requested.name == 'spring-webmvc') {
+                details.useVersion '5.3.18'
+                details.because 'fixes CVE-2022-22965'
+            }
+            if (details.requested.group == 'org.springframework' && details.requested.name == 'spring-core') {
+                details.useVersion '5.3.18'
+                details.because 'fixes CVE-2022-22965'
+            }
+            if (details.requested.group == 'org.springframework' && details.requested.name == 'spring-beans') {
+                details.useVersion '5.3.18'
+                details.because 'fixes CVE-2022-22965'
+            }
+        }
+    }
+}

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                <maxDepthPerThrowable>10</maxDepthPerThrowable>
+                <maxLength>2048</maxLength>
+                <rootCauseFirst>true</rootCauseFirst>
+            </throwableConverter>
+        </encoder>
+        <target>System.out</target>
+    </appender>
+
+    <logger name="PACKAGEPATHDOTS" level="DEBUG" additivity="false">
+        <appender-ref ref="consoleAppender" />
+    </logger>
+
+    <logger name="org.springframework.web" level="WARN" additivity="false">
+        <appender-ref ref="consoleAppender" />
+    </logger>
+
+    <!-- Uncomment these loggers for the full Web Service Request/Response messages
+        to appear in logs -->
+    <!-- <logger name="org.springframework.ws.client.MessageTracing.sent" -->
+    <!-- level="TRACE" additivity="false"> -->
+    <!-- <appender-ref ref="consoleAppender" /> -->
+    <!-- </logger> -->
+    <!-- <logger name="org.springframework.ws.client.MessageTracing.received" -->
+    <!-- level="TRACE" additivity="false"> -->
+    <!-- <appender-ref ref="consoleAppender" /> -->
+    <!-- </logger> -->
+
+    <root level="INFO">
+        <appender-ref ref="consoleAppender" />
+    </root>
+
+</configuration>

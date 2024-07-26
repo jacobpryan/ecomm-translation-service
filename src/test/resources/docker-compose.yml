@@ -1,0 +1,16 @@
+version: '3.2'
+services:
+  localstack:
+    image: localstack/localstack:0.13.1
+    container_name: ecomm-translation-service-localstack
+    ports:
+      - '4563-4584:4563-4584'
+      - '8055:8080'
+    environment:
+      - SERVICES=sqs
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - DEFAULT_REGION=us-east-1
+    volumes:
+      - './.localstack:/tmp/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'

@@ -1,0 +1,175 @@
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: zecomm-translation-service
+  namespace: lpa-ecomm
+  labels:
+    contextRoot: "ecomm-translation-service"
+    type: "ms"
+    version: "v1"
+    deployment: pre-release
+  annotations:
+spec:
+  ports:
+    - name: https
+      port: 443
+      protocol: TCP
+  type: ClusterIP
+  selector:
+    app: ecomm-translation-service
+    sha: "{{ git_sha[0:7] }}"
+
+---
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: ecomm-translation-service-{{ git_sha[0:7] }}
+  namespace: lpa-ecomm
+  labels:
+    expiration: "{{ lookup('pipe','date -d \"+2 days\" +%Y%m%d%H%M%S') }}"
+    app: ecomm-translation-service
+    sha: "{{ git_sha[0:7] }}"
+spec:
+
+  template:
+    metadata:
+      labels:
+        app: ecomm-translation-service
+        sha: "{{ git_sha[0:7] }}"
+      annotations:
+        iam.amazonaws.com/role: arn:aws:iam::{{"{AWS_ACCT_1}" if kube_env == "prod" else "{AWS_ACCT_2}"}}:role/kube-{{ kube_cluster_id }}-lpa-ecomm-ecomm_common_api
+    spec:
+      containers:
+        - name: ecomm-translation-service
+          image: "{{ docker_registry }}/compliance/ecomm/ecomm-common-api/ecomm-translation-service:{{ docker_version }}"
+          livenessProbe:
+            httpGet:
+              path: /api/v1/ecomm-translation-service/health
+              port: 8080
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /api/v1/ecomm-translation-service/health
+              port: 8080
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 6Gi
+            limits:
+              cpu: 2000m
+              memory: 6Gi
+          env:
+            - name: "SPRING_PROFILE"
+              valueFrom:
+                configMapKeyRef:
+                  name: default
+                  key: node.env
+            - name: "SQS_URL"
+              valueFrom:
+                configMapKeyRef:
+                  name: ecomm-translation-config
+                  key: sqs_url
+            - name: "PG_HOST"
+              valueFrom:
+                configMapKeyRef:
+                  name: ecomm-translation-config
+                  key: pg_host
+            - name: "PG_PORT"
+              valueFrom:
+                configMapKeyRef:
+                  name: ecomm-translation-config
+                  key: pg_port
+            - name: "PG_DB"
+              valueFrom:
+                configMapKeyRef:
+                  name: ecomm-translation-config
+                  key: pg_db
+            - name: "PG_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: ecomm-api-pg-db
+                  key: username
+            - name: "PG_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: ecomm-api-pg-db
+                  key: password
+          ports:
+            - containerPort: 8443
+            - containerPort: 8080
+          volumeMounts:
+            - name: "lastmile"
+              mountPath: "/var/run/secrets/kubernetes.io/lastmile"
+              readOnly: true
+            - name: "default-configmap"
+              mountPath: "/var/run/configmap/kubernetes.io/default"
+      volumes:
+        - name: "lastmile"
+          secret:
+            secretName: "lpa-ecomm-lastmile"
+        - name: "default-configmap"
+          configMap:
+            name: "default"
+  selector:
+    matchLabels:
+      app: ecomm-translation-service
+      sha: "{{ git_sha[0:7] }}"
+
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: ecomm-translation-service-{{ git_sha[0:7] }}
+  namespace: lpa-ecomm
+  labels:
+    app.kubernetes.io/name: ecomm-translation-service
+spec:
+  scaleTargetRef:
+    apiVersion:    apps/v1                           # Optional. Default: apps/v1
+    kind:          Deployment                        # Optional. Default: Deployment
+    name:          ecomm-translation-service-{{ git_sha[0:7] }}                   # Mandatory. Must be in the same namespace as the ScaledObject
+    # envSourceContainerName: {container-name}         # Optional. Default: .spec.template.spec.containers[0]
+  pollingInterval:  10                               # Optional. Default: 30 seconds
+  cooldownPeriod:   300                              # Optional. Default: 300 seconds
+  minReplicaCount:  2                                # Optional. Default: 0
+  maxReplicaCount:  20                               # Optional. Default: 100
+  # fallback:                                          # Optional. Section to specify fallback options
+  #   failureThreshold: 4                              # Mandatory if fallback section is included
+  #   replicas: 4                                      # Mandatory if fallback section is included 
+  advanced:                                          # Optional. Section to specify advanced options
+    restoreToOriginalReplicaCount: false             # Optional. Default: false
+    horizontalPodAutoscalerConfig:                   # Optional. Section to specify HPA related options
+      behavior:                                      # Optional. Use to modify HPA's scaling behavior
+        scaleUp:
+          policies:
+          - type: Percent
+            value: 100 
+            periodSeconds: 15         
+  triggers:
+  - type: aws-sqs-queue
+    metadata:
+      queueLength: "50000"
+      queueURL: https://sqs.us-east-1.amazonaws.com/{{"{AWS_ACCT_1}" if kube_env == "prod" else "{AWS_ACCT_2}"}}/ecomm-translation-sqs-{{ kube_env }}       #replace it with your queue url
+      awsRegion: "us-east-1"
+      identityOwner: pod # Optional. Default: pod
+    authenticationRef:
+      name: ecomm-translation-service-{{ git_sha[0:7] }}
+---
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: ecomm-translation-service-{{ git_sha[0:7] }}
+  namespace: lpa-ecomm
+  labels:
+    app.kubernetes.io/name: ecomm-translation-service
+spec:
+  secretTargetRef:
+  - key: AWS_ROLE_ARN
+    name: ecomm-translation-service-role-arn
+    parameter: awsRoleArn

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <!-- appender that will contain the json output logging -->
+  <Appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <Encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <customFields>{"name":"ecomm-translation-service", "environment":"qa"}</customFields>
+
+      <fieldNames>
+        <!-- testing adjustments of these overrides to see how it works in kibana -->
+        <!-- <message>message</message> -->
+        <!-- <timestamp>time</timestamp> -->
+        <level>log_level</level>
+      </fieldNames>
+
+      <timeZone>CST</timeZone>
+
+      <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+        <maxDepthPerThrowable>20</maxDepthPerThrowable>
+        <maxLength>2048</maxLength>
+        <shortenedClassNameLength>20</shortenedClassNameLength>
+        <exclude>sun\.reflect\..*\.invoke.*</exclude>
+        <exclude>net\.sf\.cglib\.proxy\.MethodProxy\.invoke</exclude>
+        <rootCauseFirst>true</rootCauseFirst>
+      </throwableConverter>
+    </Encoder>
+
+  </Appender>
+
+  <Logger name="springfox" level="ERROR" />
+
+  <Logger name="org.apache" level="ERROR" />
+
+  <Logger name="httpclient" level="ERROR" />
+
+  <Logger name="com.amazonaws" level="ERROR" />
+
+  <Logger name="com.amazon" level="ERROR" />
+
+  <Logger name="io.micrometer" level="ERROR" />
+
+  <Root level="INFO">
+    <appender-ref ref="stdout" />
+  </Root>
+</Configuration>

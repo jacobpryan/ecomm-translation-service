@@ -1,0 +1,92 @@
+buildscript {
+    // Define all dependency versions which share a common version and should be updated together
+    ext {
+        springBootVersion = '2.7.6'
+    }
+    ext {
+        springFrameVersion = '5.3.18'
+    }
+    ext {
+        tomcatVersion = '9.0.46'
+    }
+    ext {
+        apachePoiVersion = '5.2.3'
+    }
+    ext {
+        jacksonVersion = '2.14.0'
+    }
+    ext {
+        awsSdkVersion = '2.21.21'
+    }
+    ext {
+        nettyVersion = '4.1.106.Final'
+    }
+    repositories {
+        maven {
+            url repository
+        }
+    }
+}
+
+plugins {
+    id "java"
+    id "java-library"
+    id "org.sonarqube" version "3.5.0.2730"
+    id "io.spring.dependency-management" version "1.1.0"
+    id "jacoco"
+    id "org.springframework.boot" version "${springBootVersion}"
+    id "io.freefair.lombok" version "6.6.1"
+    id "eclipse"
+    id "idea"
+}
+
+apply from: 'dependencies.gradle'
+
+repositories {
+    maven {
+        url repository
+    }
+    maven {url "{MAVEN_URL}" }
+    mavenCentral()
+}
+
+bootJar {
+    archiveFileName = "${buildDir}/libs/app.jar"
+    manifest {
+        attributes("Implementation-Version": archiveVersion)
+    }
+}
+
+//lombok {
+//    config['lombok.anyConstructor.addConstructorProperties'] = 'true'
+//}
+
+def javaVersion = JavaVersion.VERSION_11
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
+
+def findJarsByGroup(Configuration config, groupName) {
+  configurations.compileClasspath.files { it.group.equals(groupName) }
+}
+
+test {
+    useJUnitPlatform {
+        includeEngines 'junit-jupiter'
+    }
+    finalizedBy jacocoTestReport
+    systemProperty 'spring.profiles.active', 'test'
+}
+
+jacocoTestReport {
+    dependsOn test
+    group("Reporting")
+    reports {
+        xml.required = true
+        csv.required = false
+        html.destination(new File("${buildDir}/reports/coverage"))
+    }
+}
+
+bootRun {
+    systemProperties = System.properties
+}

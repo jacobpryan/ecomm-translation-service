@@ -1,0 +1,48 @@
+.gradle
+/build/
+/test/*
+!.gitkeep
+!gradle/wrapper/gradle-wrapper.jar
+/out/
+src/main/resources/application-local.properties
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.metadata
+Servers
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+bin/
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+test/.gitkeep
+
+### MAC ###
+.DS_Store
+
+## VS Code ##
+.vscode
+
+## Node ##
+**/node_modules/**
+
+## local setup ##
+src/test/resources/.localstack/**
+application-local.properties
+
+.java-version

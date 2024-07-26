@@ -1,0 +1,290 @@
+{
+	"info": {
+		"_postman_id": "68d773b4-7779-44f3-8641-333a83a3dd86",
+		"name": "Ecomm Translation Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18774730"
+	},
+	"item": [
+		{
+			"name": "Service Tests",
+			"item": [
+				{
+					"name": "Send Sqs Message(s)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "this is a test",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8443/api/v1/ecomm-translation-service/sqs-int/publish-oc/test",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"v1",
+								"ecomm-translation-service",
+								"sqs-int",
+								"publish-oc",
+								"test"
+							],
+							"query": [
+								{
+									"key": "messageSendCount",
+									"value": "2",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish Message to OC",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8443/api/v1/ecomm-translation-service/oc/test",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"v1",
+								"ecomm-translation-service",
+								"oc",
+								"test"
+							],
+							"query": [
+								{
+									"key": "messageSendCount",
+									"value": "2",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Open Connector V2",
+			"item": [
+				{
+					"name": "Conversation W/OAuth",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "clientSecret",
+									"value": "xjQoDa67pAEjp9Y7TcJe0-JYo2",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "9bd60927-664f-42db-888f-9c5da898975c",
+									"type": "string"
+								},
+								{
+									"key": "scope",
+									"value": "openid write conversation file",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "https://iam-oauth2.globalrelay.com/oauth2/token",
+									"type": "string"
+								},
+								{
+									"key": "client_authentication",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "useBrowser",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestInfo\": {\n        \"requestId\": \"f17af6c2-1f6d-4263-861e-ea211608f12c\"\n    },\n    \"conversationOverview\": {\n        \"conversationId\": \"k17af6c2-1f6d-4263-861e-ea211608f93c\",\n        \"conversationType\": \"InMeetingChat-DM\",\n        \"initiatorName\": \"Jacob Ryan\",\n        \"initiatorEmail\": \"jacobryan@nmcop.com\"\n    },\n    \"conversationEvents\": [\n        {\n            \"eventTime\": 1707433745426,\n            \"eventType\": \"Message\",\n            \"participants\": [\n                {\n                    \"displayName\": \"Jacob Ryan\",\n                    \"corporateEmail\": \"jacobryan@nmcop.com\",\n                    \"isParticipant\": true,\n                    \"userType\": \"initiator\"\n                },\n                {\n                    \"displayName\": \"keikeralexis\",\n                    \"corporateEmail\": \"keikeralexis@nmcop.com\",\n                    \"isParticipant\": true\n                }\n            ],\n            \"content\": {\n                \"message\": \"Testing href file attachments\",\n                \"contentType\": \"plain\"\n            }\n        },\n        {\n            \"eventTime\": 1707433745426,\n            \"eventId\": 55001,\n            \"eventType\": \"File_transfer\",\n            \"participants\": [\n                {\n                \"displayName\": \"Jacob Ryan\",\n                \"corporateEmail\": \"jacobryan@nmcop.com\",\n                \"userType\": \"initiator\",\n                \"isParticipant\": false\n                }\n            ],\n            \"files\": [\n                {\n                \"filename\": \"large-file.txt\",\n                \"fileKey\": \"default/large-file.txt\",\n                \"fileHref\": \"https://docs.spring.io/spring-security/site/docs/5.2.12.RELEASE/reference/html/images/tip.png\",\n                \"isInlined\": false,\n                \"isAvailable\": true\n                }\n            ]\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://conversations.api.globalrelay.com/v2/conversations",
+							"protocol": "https",
+							"host": [
+								"conversations",
+								"api",
+								"globalrelay",
+								"com"
+							],
+							"path": [
+								"v2",
+								"conversations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "File Upload W/OAuth",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessTokenUrl",
+									"value": "https://iam-oauth2.globalrelay.com/oauth2/token",
+									"type": "string"
+								},
+								{
+									"key": "clientSecret",
+									"value": "xjQoDa67pAEjp9Y7TcJe0-JYo2",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "9bd60927-664f-42db-888f-9c5da898975c",
+									"type": "string"
+								},
+								{
+									"key": "scope",
+									"value": "openid write conversation file",
+									"type": "string"
+								},
+								{
+									"key": "client_authentication",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "useBrowser",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": ""
+							}
+						},
+						"url": {
+							"raw": "https://conversations.api.globalrelay.com/v2/files/default/large-file-1220.txt",
+							"protocol": "https",
+							"host": [
+								"conversations",
+								"api",
+								"globalrelay",
+								"com"
+							],
+							"path": [
+								"v2",
+								"files",
+								"default",
+								"large-file-1220.txt"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Sercive Health Check",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8443/api/v1/ecomm-translation-service/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"v1",
+								"ecomm-translation-service",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
