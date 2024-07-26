@@ -1,6 +1,6 @@
 # ecomm-translation-service
 
-> Kubernetes Microservice in use for the translation of Ecomm formatted messages and publishing based on the source's configured endpoint to Global Relay's Open Connector API. This repository has been scrubbed for any sensitive data for sharing.
+> Kubernetes Microservice in use for the translation of Electronic Communication messages and publishing based on the source's configured endpoint to a vendor's API. This repository has been scrubbed for any sensitive data for sharing.
 
 ### Current State
 #### Translation Service Current State is as follows:
